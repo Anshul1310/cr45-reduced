@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/CR45-NITT/cr45-reduced/backend/internal/auth"
 	"github.com/CR45-NITT/cr45-reduced/backend/internal/domain"
@@ -13,12 +15,14 @@ import (
 )
 
 type Server struct {
-	store store.Repository
-	auth  *auth.Service
+	store       store.Repository
+	auth        *auth.Service
+	logger      *log.Logger
+	logRequests bool
 }
 
-func NewServer(s store.Repository, authService *auth.Service) *Server {
-	return &Server{store: s, auth: authService}
+func NewServer(s store.Repository, authService *auth.Service, logger *log.Logger, logRequests bool) *Server {
+	return &Server{store: s, auth: authService, logger: logger, logRequests: logRequests}
 }
 
 func (s *Server) Handler() http.Handler {
@@ -28,7 +32,33 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/api/timetable", s.handleGetTimetable)
 	mux.HandleFunc("/api/admin/override", s.handleUpdateOverride)
 	mux.HandleFunc("/api/admin/slot", s.handleDeleteSlot)
+
+	if s.logRequests {
+		return s.loggingMiddleware(mux)
+	}
 	return mux
+}
+
+type responseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+	rw.statusCode = code
+	rw.ResponseWriter.WriteHeader(code)
+}
+
+func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rw := &responseWriter{ResponseWriter: w, statusCode: http.StatusOK}
+		start := time.Now()
+
+		next.ServeHTTP(rw, r)
+
+		duration := time.Since(start)
+		s.logger.Printf("%s %s %d %v", r.Method, r.URL.Path, rw.statusCode, duration)
+	})
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
