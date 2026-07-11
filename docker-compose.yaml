@@ -19,11 +19,21 @@ services:
       - 8080:8080
     restart: on-failure
 
-  frontend:
-    build: "./frontend"
-    ports:
-      - 3000:80
-    restart: on-failure
+  # frontend:
+  #   build: "./frontend"
+  #   ports:
+  #     - 3000:80
+  #   restart: on-failure
 
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl
+    restart: on-failure
 volumes:
   pgdata:
