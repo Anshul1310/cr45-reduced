@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=anshul
+      - POSTGRES_DB=database
+      - POSTGRES_PASSWORD=anshul
+    ports:
+      - 5435:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgres://anshul:anshul@db:5432/database?sslmode=disable
+      - HTTP_ADDR=:8080
+    ports:
+      - 8080:8080
+    restart: on-failure
+
+  frontend:
+    build: "./frontend"
+    ports:
+      - 3000:80
+    restart: on-failure
+
+volumes:
+  pgdata:
