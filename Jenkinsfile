@@ -16,11 +16,14 @@ pipeline {
         stage('Backend Lint & Test') {
             steps {
                 sh '''
-                    docker run --rm -v $WORKSPACE/backend:/app -w /app golang:1.26-alpine sh -c "
-                        go vet ./... &&
-                        go build ./... &&
-                        go test ./... -v || true
-                    "
+                    docker run --rm \
+                        --volumes-from $(hostname) \
+                        -w $WORKSPACE/backend \
+                        golang:1.26-alpine sh -c "
+                            go vet ./... &&
+                            go build ./... &&
+                            go test ./... -v || true
+                        "
                 '''
             }
         }
@@ -28,11 +31,14 @@ pipeline {
         stage('Frontend Lint & Test') {
             steps {
                 sh '''
-                    docker run --rm -v $WORKSPACE/frontend:/app -w /app node:20-alpine sh -c "
-                        npm ci &&
-                        npx eslint src/ || true &&
-                        npm run build
-                    "
+                    docker run --rm \
+                        --volumes-from $(hostname) \
+                        -w $WORKSPACE/frontend \
+                        node:20-alpine sh -c "
+                            npm ci &&
+                            npx eslint src/ || true &&
+                            npm run build
+                        "
                 '''
             }
         }
