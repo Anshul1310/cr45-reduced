@@ -14,34 +14,26 @@ pipeline {
         // ──────────────────────────────────────────────
 
         stage('Backend Lint & Test') {
-            agent {
-                docker {
-                    image 'golang:1.26-alpine'
-                    args '-u root'
-                }
-            }
             steps {
-                dir('backend') {
-                    sh 'go vet ./...'
-                    sh 'go build ./...'
-                    sh 'go test ./... -v || true'
-                }
+                sh '''
+                    docker run --rm -v $WORKSPACE/backend:/app -w /app golang:1.26-alpine sh -c "
+                        go vet ./... &&
+                        go build ./... &&
+                        go test ./... -v || true
+                    "
+                '''
             }
         }
 
         stage('Frontend Lint & Test') {
-            agent {
-                docker {
-                    image 'node:20-alpine'
-                    args '-u root'
-                }
-            }
             steps {
-                dir('frontend') {
-                    sh 'npm ci'
-                    sh 'npx eslint src/ || true'
-                    sh 'npm run build'
-                }
+                sh '''
+                    docker run --rm -v $WORKSPACE/frontend:/app -w /app node:20-alpine sh -c "
+                        npm ci &&
+                        npx eslint src/ || true &&
+                        npm run build
+                    "
+                '''
             }
         }
 
