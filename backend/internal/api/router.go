@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -27,7 +28,7 @@ func NewServer(s store.Repository, authService *auth.Service, logger *log.Logger
 
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/healthz", s.handleHealth)
+	mux.HandleFunc("/api/healthz", s.handleHealth)
 	mux.HandleFunc("/api/auth/login", s.handleLogin)
 	mux.HandleFunc("/api/timetable", s.handleGetTimetable)
 	mux.HandleFunc("/api/admin/override", s.handleUpdateOverride)
@@ -66,8 +67,24 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("ok"))
+	ip := getContainerIP()
+	writeJSON(w, http.StatusOK, map[string]string{
+		"status": "ok",
+		"ip":     ip,
+	})
+}
+
+func getContainerIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "unknown"
+	}
+	for _, addr := range addrs {
+		if ipNet, ok := addr.(*net.IPNet); ok && !ipNet.IP.IsLoopback() && ipNet.IP.To4() != nil {
+			return ipNet.IP.String()
+		}
+	}
+	return "unknown"
 }
 
 func (s *Server) handleGetTimetable(w http.ResponseWriter, r *http.Request) {

@@ -9,13 +9,57 @@ services:
       - 5435:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
 
-  backend:
+  backend-1:
+    image: anshul8394/cr45-backend:latest
     build: ./backend
     environment:
       - DATABASE_URL=postgres://anshul:anshul@db:5432/database?sslmode=disable
       - HTTP_ADDR=:8080
-    restart: on-failure
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  backend-2:
+    image: anshul8394/cr45-backend:latest
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgres://anshul:anshul@db:5432/database?sslmode=disable
+      - HTTP_ADDR=:8080
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  backend-3:
+    image: anshul8394/cr45-backend:latest
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgres://anshul:anshul@db:5432/database?sslmode=disable
+      - HTTP_ADDR=:8080
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  backend-4:
+    image: anshul8394/cr45-backend:latest
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgres://anshul:anshul@db:5432/database?sslmode=disable
+      - HTTP_ADDR=:8080
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  backend-5:
+    image: anshul8394/cr45-backend:latest
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgres://anshul:anshul@db:5432/database?sslmode=disable
+      - HTTP_ADDR=:8080
+    depends_on:
+      - db
+    restart: unless-stopped
 
   # frontend:
   #   build: "./frontend"
@@ -24,6 +68,7 @@ services:
   #   restart: on-failure
 
   nginx:
+    image: anshul8394/cr45-nginx:latest
     build:
       context: .
       dockerfile: nginx/Dockerfile
@@ -32,7 +77,13 @@ services:
       - 80:80
     volumes:
       - ./nginx/ssl:/etc/nginx/ssl
-    restart: on-failure
+    depends_on:
+      - backend-1
+      - backend-2
+      - backend-3
+      - backend-4
+      - backend-5
+    restart: unless-stopped
 
   jenkins:
     build: ./jenkins
