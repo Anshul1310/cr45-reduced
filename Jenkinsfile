@@ -34,9 +34,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    docker compose down || true
-                    docker compose pull
-                    docker compose up -d
+                    docker compose -p cr45-reduced pull nginx backend-1 backend-2 backend-3 backend-4 backend-5
+                    docker compose -p cr45-reduced up -d nginx
                 '''
             }
         }
