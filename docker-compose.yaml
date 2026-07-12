@@ -15,8 +15,6 @@ services:
     environment:
       - DATABASE_URL=postgres://anshul:anshul@db:5432/database?sslmode=disable
       - HTTP_ADDR=:8080
-    ports:
-      - 8080:8080
     restart: on-failure
 
   # frontend:
@@ -35,5 +33,17 @@ services:
     volumes:
       - ./nginx/ssl:/etc/nginx/ssl
     restart: on-failure
+
+  jenkins:
+    build: ./jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: on-failure
+
 volumes:
   pgdata:
+  jenkins_home:
