@@ -29,6 +29,7 @@ func NewServer(s store.Repository, authService *auth.Service, logger *log.Logger
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/healthz", s.handleHealth)
+	mux.HandleFunc("/api/stress", s.handleStress)
 	mux.HandleFunc("/api/auth/login", s.handleLogin)
 	mux.HandleFunc("/api/timetable", s.handleGetTimetable)
 	mux.HandleFunc("/api/admin/override", s.handleUpdateOverride)
@@ -71,6 +72,23 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{
 		"status": "ok",
 		"ip":     ip,
+	})
+}
+
+func (s *Server) handleStress(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	sum := 0
+	for i := 0; i < 100000000; i++ {
+		sum += i
+	}
+	ip := getContainerIP()
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"status": "done",
+		"ip":     ip,
+		"sum":    sum,
 	})
 }
 

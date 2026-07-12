@@ -9,8 +9,7 @@ export const options = {
 };
 
 export default function () {
-  // Hit the Nginx reverse proxy which load balances to the backends
-  const res = http.get('https://localhost/api/healthz');
+  const res = http.get('https://localhost/api/heathz');
 
   check(res, {
     'is status 200': (r) => r.status === 200,
