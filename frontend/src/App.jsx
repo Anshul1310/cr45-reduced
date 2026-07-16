@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 const CLASS_ID = import.meta.env.VITE_CLASS_ID || "107125";
 const TOKEN_STORAGE_KEY = "cr45_reduced_token";
 
+
 async function requestJSON(path, options = {}) {
   const response = await fetch(path, options);
   const contentType = response.headers.get("content-type") || "";
