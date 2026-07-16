@@ -2,8 +2,5 @@ FROM jenkins/jenkins:lts-alpine
 
 USER root
 
-RUN apk add --no-cache docker-cli docker-compose
+RUN apk add --no-cache docker-cli docker-compose go nodejs npm
 
-RUN addgroup -g 984 docker && addgroup jenkins docker
-
-USER jenkins

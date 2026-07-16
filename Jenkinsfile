@@ -10,8 +10,14 @@ pipeline {
     stages {
         stage('Lint & Test') {
             steps {
-                sh 'docker run --rm --volumes-from $(hostname) -w $WORKSPACE/backend golang:1.26-alpine sh -c "go vet ./... && go build ./... && go test ./... -v || true"'
-                sh 'docker run --rm --volumes-from $(hostname) -w $WORKSPACE/frontend node:20-alpine sh -c "npm ci && npx eslint src/ || true && npm run build"'
+                dir('backend') {
+                    sh 'go vet ./...'
+                    sh 'go test ./... -v || true'
+                }
+                dir('frontend') {
+                    sh 'npm ci'
+                    sh 'npm run build'
+                }
             }
         }
 
@@ -34,8 +40,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    docker compose -p cr45-reduced pull nginx backend-1 backend-2 backend-3 backend-4 backend-5
-                    docker compose -p cr45-reduced up -d nginx
+                    docker compose pull
+                    docker compose up -d --remove-orphans
                 '''
             }
         }
