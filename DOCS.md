@@ -215,6 +215,8 @@ for i in {1..10}; do curl -k -s https://localhost/api/healthz | grep -o '"ip":"[
 
 
 
+[LOGS LINK](https://shrib.com/#Opal8BppVp9)
+
 
 Evaluate the performance characteristics of the deployment under different configurations, comparing a single-backend instance to a multi-replica load-balanced deployment.
 
@@ -242,8 +244,8 @@ Below is the performance comparison between the two deployment configurations un
 
 ### 3. Performance Analysis & Comparison
 
-Horizontal scaling did improve the overall performance, though the gains under this specific load profile are modest:
-- **Throughput**: Increased from **215.3 RPS** to **227.3 RPS** (approx. +5.6%).
+Horizontal scaling did improve the overall performance, but the increasement is low
+- **Throughput**: Increased from **215.3 RPS** to **227.3 RPS** (approx. +5%).
 - **Latency**: The average response time dropped by **9.3%** (from 132.9 ms to 120.5 ms), and higher-percentile latencies (P90 and P95) also saw an 8% to 11% improvement.
 - **Reliability**: There were no failures since the load was not that high and users were less as far as my local system is concerned
 
