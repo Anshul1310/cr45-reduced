@@ -236,17 +236,17 @@ Below is the performance comparison between the two deployment configurations un
 
 | Metric | 1 Backend Instance | 5 Backend Replicas | Improvement / Delta |
 | :--- | :---: | :---: | :---: |
-| **Requests / Second (Throughput)** | 215.32 RPS | 227.27 RPS | **around 5%** |
-| **Average Latency** | 132.85 ms | 120.52 ms | **around 9% lower** |
-| **P95 Latency** | 345.84 ms | 307.74 ms | **around 11% lower** |
+| **Requests / Second (Throughput)** | 217.25 RPS | 223.19 RPS | **+2.73%** |
+| **Average Latency** | 131.09 ms | 123.99 ms | **5.42% lower** |
+| **P95 Latency** | 320.90 ms | 316.29 ms | **1.44% lower** |
 
 ---
 
 ### 3. Performance Analysis & Comparison
 
 Horizontal scaling did improve the overall performance, but the increasement is low
-- **Throughput**: Increased from **215.3 RPS** to **227.3 RPS** (approx. +5%).
-- **Latency**: The average response time dropped by **9.3%** (from 132.9 ms to 120.5 ms), and higher-percentile latencies (P90 and P95) also saw an 8% to 11% improvement.
+- **Throughput**: Increased from **217.25 RPS** to **223.19 RPS** (approx. +2.73%).
+- **Latency**: The average response time dropped by **5.42%** (from 131.09 ms to 123.99 ms), and higher-percentile latencies (such as P95) also saw a 1.44% improvement.
 - **Reliability**: There were no failures since the load was not that high and users were less as far as my local system is concerned
 
 ---
@@ -259,7 +259,7 @@ The point is since all the containers use my local system itself, there is only 
 
 ### 5. Potential Bottlenecks
 
-1. **Host Hardware Constraints**:
+1. **My Hardware Constraints**:
    All containers (Nginx, Go backends, Frontend, and Database) are run on the same my same local machine. They share the same resources. Therefore, increasing the replica count doesnt inrease my hardware capablities instead they share the resources
 2. **Database Concurrency**:
    [Potential Bottleneck but again not relevant since for load testing the /api/stress has no database call]Since i ahev only one db running of postgress, it doesnt matter how many backend instrance i craete, but in production all instances will share the same single db instance
